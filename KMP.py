@@ -2,8 +2,8 @@ import random
 import time
 import matplotlib.pyplot as plt
 
-def preprocess(patt):
-    lps=[0]*(len(patt))
+def preprocess(patt):            
+    lps=[0]*(len(patt))         #lps[i] stores the length of the longest prefix of patt[0..i] which is also a suffix of patt[0..i] 
     leng=0
     lps[0]=0
     i=1
@@ -21,7 +21,6 @@ def preprocess(patt):
     return(lps)
 
 def KMP(pat,txt):
-    nums=0
     m=len(pat)
     n=len(txt)
     arr=preprocess(pat)
@@ -29,14 +28,13 @@ def KMP(pat,txt):
     i=0
     ch=0
     while n-i>=m-j:
-        nums+=1
         if pat[j]==txt[i]:
             i+=1
             j+=1
-        if j==m:
+        if j==m:            #We report occurence if match occurs for the entire pattern length
             ch=1
             #print("Found at ",i-j)
-            j=arr[j-1]
+            j=arr[j-1]      #Start the scanning from the position till which we have already scanned
         elif i<n and pat[j]!=txt[i]:
             if j!=0:
                 j=arr[j-1]
@@ -44,46 +42,44 @@ def KMP(pat,txt):
                 i+=1
     #if ch==0:
     #   print("Nope")
-    return(nums)
 
 
 X=[]
-X2=[]
-X3=[]
 Y=[]
-Y1=[]
-Y2=[]
-for g in range(4,200):
-    X+=[g]
-for t in range(4,200):
+for g in range(4,8000):
+    X+=[g]                                  
+for t in range(4,8000):
     text=[]
     pattern=[]
     for i in range(t):
-        text+=[random.randint(0,9)]
+        text+=[random.randint(0,9)]                       #generating random string of length k which varries from 4 to 8000
     for j in range(4):
-        pattern+=[j]
+        pattern+=[random.randint(0,9)]                    #generating random pattern of length of length 4
     text+=pattern
+    st=time.time()
     res=KMP(pattern,text)
-    Y+=[res]
+    et=time.time()
+    Y+=[et-st]
 
-for g in range(8,200):
-    X2+=[g]
-for t in range(8,200):
-    text=[]
-    pattern=[]
-    for i in range(t):
-        text+=[random.randint(0,9)]
-    for j in range(8):
-        pattern+=[j]
-    text+=pattern
-    res=KMP(pattern,text)
-    Y1+=[res]
+X2=[]
+Y2=[]
+co=0
+check=0
 
-plt.plot(X,Y)
-plt.plot(X2,Y1,color='RED')
+#We will be plotting the average time taken for lengths in multiples of 100
+for y in range(80):
+    X2+=[y]
+    Y2+=[0]
+for t in range(len(Y)):
+    if t<100*(co+1) and t>=100*co:
+        Y2[co]+=Y[t]/100
+        check+=1
+    if check==100:
+        co+=1
+        check=0
+
+plt.plot(X2,Y2)
+
+plt.xlabel("Length of string in order of 100")
+plt.ylabel("Time")
 plt.show()
-
-
-
-#print(func([7,7,1],[1, 8, 4, 6, 5, 0, 3, 0, 9, 3, 2, 5, 6, 5, 5, 9, 7, 3, 7, 3, 7, 7, 1]))
-
